@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Website</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+            overflow: hidden;
+        }
+        #falling-petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 200px;
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .exit-btn {
+            background-color: #ff4b5c;
+            color: white;
+        }
+        .continue-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="falling-petals"></canvas>
+    <div class="button-container">
+        <button class="exit-btn" onclick="exitWebsite()">Exit</button>
+        <button class="continue-btn" onclick="continueWebsite()">Continue</button>
+    </div>
+    <div id="new-page" class="hidden">
+        <h1>Welcome to the Next Page!</h1>
+        <p>Here, you can add more options or images with links.</p>
+    </div>
+
+    <script>
+        // Animation for falling petals
+        const canvas = document.getElementById("falling-petals");
+        const ctx = canvas.getContext("2d");
+        const petals = [];
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Petal {
+            constructor(x, y, size, speedX, speedY) {
+                this.x = x;
+                this.y = y;
+                this.size = size;
+                this.speedX = speedX;
+                this.speedY = speedY;
+                this.color = `rgba(255, 255, 0, ${Math.random()})`;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y > canvas.height) {
+                    this.y = 0;
+                    this.x = Math.random() * canvas.width;
+                }
+            }
+        }
+
+        function initPetals() {
+            for (let i = 0; i < 100; i++) {
+                const size = Math.random() * 5 + 2;
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const speedX = Math.random() * 2 - 1;
+                const speedY = Math.random() * 3 + 1;
+                petals.push(new Petal(x, y, size, speedX, speedY));
+            }
+        }
+
+        function animatePetals() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            petals.forEach((petal) => {
+                petal.update();
+                petal.draw();
+            });
+            requestAnimationFrame(animatePetals);
+        }
+
+        initPetals();
+        animatePetals();
+
+        // Event Handlers
+        function exitWebsite() {
+            alert("Goodbye!");
+            window.close();
+        }
+
+        function continueWebsite() {
+            document.querySelector(".button-container").classList.add("hidden");
+            document.getElementById("new-page").classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
