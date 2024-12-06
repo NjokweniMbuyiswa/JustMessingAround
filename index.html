@@ -12,7 +12,7 @@
             background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
             overflow: hidden;
         }
-        #falling-petals {
+        #falling-petals, #falling-hearts {
             position: fixed;
             top: 0;
             left: 0;
@@ -43,10 +43,23 @@
         .hidden {
             display: none;
         }
+        #text-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 2rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <canvas id="falling-petals"></canvas>
+    <canvas id="falling-hearts"></canvas>
+    <div id="text-display">TO THE LOVE OF MY LIFE, KABELO L.M. CHOSHANE</div>
     <div class="button-container">
         <button class="exit-btn" onclick="exitWebsite()">Exit</button>
         <button class="continue-btn" onclick="continueWebsite()">Continue</button>
@@ -57,61 +70,68 @@
     </div>
 
     <script>
-        // Animation for falling petals
-        const canvas = document.getElementById("falling-petals");
-        const ctx = canvas.getContext("2d");
+        const petalCanvas = document.getElementById("falling-petals");
+        const heartCanvas = document.getElementById("falling-hearts");
+        const petalCtx = petalCanvas.getContext("2d");
+        const heartCtx = heartCanvas.getContext("2d");
         const petals = [];
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const hearts = [];
+        petalCanvas.width = heartCanvas.width = window.innerWidth;
+        petalCanvas.height = heartCanvas.height = window.innerHeight;
 
-        class Petal {
-            constructor(x, y, size, speedX, speedY) {
+        class Particle {
+            constructor(x, y, size, speedX, speedY, color) {
                 this.x = x;
                 this.y = y;
                 this.size = size;
                 this.speedX = speedX;
                 this.speedY = speedY;
-                this.color = `rgba(255, 255, 0, ${Math.random()})`;
+                this.color = color;
             }
-            draw() {
+            draw(ctx) {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
                 ctx.closePath();
             }
-            update() {
+            update(canvasWidth, canvasHeight) {
                 this.y += this.speedY;
                 this.x += this.speedX;
-                if (this.y > canvas.height) {
+                if (this.y > canvasHeight) {
                     this.y = 0;
-                    this.x = Math.random() * canvas.width;
+                    this.x = Math.random() * canvasWidth;
                 }
             }
         }
 
-        function initPetals() {
-            for (let i = 0; i < 100; i++) {
+        function initParticles(particlesArray, count, color, canvasWidth, canvasHeight) {
+            for (let i = 0; i < count; i++) {
                 const size = Math.random() * 5 + 2;
-                const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height;
+                const x = Math.random() * canvasWidth;
+                const y = Math.random() * canvasHeight;
                 const speedX = Math.random() * 2 - 1;
                 const speedY = Math.random() * 3 + 1;
-                petals.push(new Petal(x, y, size, speedX, speedY));
+                particlesArray.push(new Particle(x, y, size, speedX, speedY, color));
             }
         }
 
-        function animatePetals() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            petals.forEach((petal) => {
-                petal.update();
-                petal.draw();
+        function animateParticles(ctx, particlesArray, canvasWidth, canvasHeight) {
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            particlesArray.forEach((particle) => {
+                particle.update(canvasWidth, canvasHeight);
+                particle.draw(ctx);
             });
-            requestAnimationFrame(animatePetals);
+            requestAnimationFrame(() => animateParticles(ctx, particlesArray, canvasWidth, canvasHeight));
         }
 
-        initPetals();
-        animatePetals();
+        // Initialize petals and hearts
+        initParticles(petals, 100, "rgba(255, 255, 0, 0.8)", petalCanvas.width, petalCanvas.height);
+        initParticles(hearts, 50, "rgba(255, 0, 0, 0.8)", heartCanvas.width, heartCanvas.height);
+
+        // Animate petals and hearts
+        animateParticles(petalCtx, petals, petalCanvas.width, petalCanvas.height);
+        animateParticles(heartCtx, hearts, heartCanvas.width, heartCanvas.height);
 
         // Event Handlers
         function exitWebsite() {
@@ -126,3 +146,4 @@
     </script>
 </body>
 </html>
+
