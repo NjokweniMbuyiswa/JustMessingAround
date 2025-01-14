@@ -65,7 +65,7 @@
         <h1>To the Love of My Life, Kabelo L.M. Choshane</h1>
         <button class="exit-btn" onclick="exitWebsite()">Exit</button>
         <button class="continue-btn" onclick="startQuiz()">Continue</button>
-        <button class="continue-btn" onclick="playMusicAndContinue()">Continue</button>
+        <button id="music-button" style="color: red;" onclick="playMusic()">First Click Here</button>
     </div>
 
     <div id="quiz-container">
@@ -185,11 +185,15 @@
             window.close();
         }
 
-        function playMusicAndContinue() {
+        function playMusic() {
+            const music = document.getElementById("background-music");
             music.play();
-            document.querySelector(".button-container").classList.add("hidden");
-            document.getElementById("new-page").classList.remove("hidden");
+            const button = document.getElementById("music-button");
+            button.innerHTML = "Music is Playing!";
+            button.style.color = "green"; // Optional: Change color after the music starts
+            button.disabled = true; // Optional: Disable button after the first click
         }
+        
     </script>
 </body>
 </html>
