@@ -12,7 +12,7 @@
             background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
             overflow: hidden;
         }
-        #falling-petals, #falling-hearts {
+        #falling-hearts {
             position: fixed;
             top: 0;
             left: 0;
@@ -20,9 +20,9 @@
             height: 100%;
             pointer-events: none;
         }
-        .button-container {
+        .center-container {
             text-align: center;
-            margin-top: 200px;
+            margin-top: 50px;
         }
         button {
             font-size: 20px;
@@ -40,109 +40,148 @@
             background-color: #28a745;
             color: white;
         }
-        .hidden {
+        .quiz-question {
             display: none;
-        }
-        #text-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             text-align: center;
-            font-size: 2rem;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            font-weight: bold;
+            margin-top: 100px;
+        }
+        .quiz-question.active {
+            display: block;
+        }
+        .final-reveal {
+            display: none;
+            text-align: center;
+            margin-top: 100px;
+        }
+        img {
+            max-width: 300px;
         }
     </style>
 </head>
 <body>
-    <canvas id="falling-petals"></canvas>
     <canvas id="falling-hearts"></canvas>
-    <div id="text-display">TO THE LOVE OF MY LIFE, KABELO L.M. CHOSHANE</div>
-    <div class="button-container">
+    <div class="center-container">
+        <h1>To the Love of My Life, Kabelo L.M. Choshane</h1>
         <button class="exit-btn" onclick="exitWebsite()">Exit</button>
-        <button class="continue-btn" onclick="continueWebsite()">Continue</button>
+        <button class="continue-btn" onclick="startQuiz()">Continue</button>
     </div>
-    <div id="new-page" class="hidden">
-        <h1>Welcome to the Next Page!</h1>
-        <p>Here, you can add more options or images with links.</p>
+
+    <div id="quiz-container">
+        <!-- Questions will be dynamically populated -->
+    </div>
+
+    <div class="final-reveal">
+        <h1>Surprise! 🎉</h1>
+        <p>We are going to see Cigarettes After Sex on March 7th!</p>
+        <img src="concert-tickets.png" alt="Tickets Screenshot">
+        <p>Will you go with me?</p>
+        <button onclick="showFinalPage()">YES</button>
+        <button onclick="showFinalPage()">YURP</button>
+    </div>
+
+    <div class="final-page" style="display:none; text-align: center;">
+        <h1>You Said Yes!</h1>
+        <img src="her-picture.jpg" alt="Her Picture" style="border-radius: 50%; max-width: 200px;">
+        <p>Here’s a meme for you:</p>
+        <img src="meme.gif" alt="Meme" style="max-width: 300px;">
     </div>
 
     <script>
-        const petalCanvas = document.getElementById("falling-petals");
         const heartCanvas = document.getElementById("falling-hearts");
-        const petalCtx = petalCanvas.getContext("2d");
         const heartCtx = heartCanvas.getContext("2d");
-        const petals = [];
-        const hearts = [];
-        petalCanvas.width = heartCanvas.width = window.innerWidth;
-        petalCanvas.height = heartCanvas.height = window.innerHeight;
+        heartCanvas.width = window.innerWidth;
+        heartCanvas.height = window.innerHeight;
 
-        class Particle {
-            constructor(x, y, size, speedX, speedY, color) {
+        // Draw hearts
+        class Heart {
+            constructor(x, y, size, speedY) {
                 this.x = x;
                 this.y = y;
                 this.size = size;
-                this.speedX = speedX;
                 this.speedY = speedY;
-                this.color = color;
             }
-            draw(ctx) {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-                ctx.closePath();
+            draw() {
+                heartCtx.fillStyle = "red";
+                heartCtx.beginPath();
+                heartCtx.moveTo(this.x, this.y);
+                heartCtx.arc(this.x - this.size / 2, this.y - this.size / 2, this.size / 2, 0, Math.PI, true);
+                heartCtx.arc(this.x + this.size / 2, this.y - this.size / 2, this.size / 2, 0, Math.PI, true);
+                heartCtx.lineTo(this.x, this.y + this.size);
+                heartCtx.closePath();
+                heartCtx.fill();
             }
-            update(canvasWidth, canvasHeight) {
+            update() {
                 this.y += this.speedY;
-                this.x += this.speedX;
-                if (this.y > canvasHeight) {
-                    this.y = 0;
-                    this.x = Math.random() * canvasWidth;
+                if (this.y > heartCanvas.height) {
+                    this.y = -10;
                 }
             }
         }
 
-        function initParticles(particlesArray, count, color, canvasWidth, canvasHeight) {
-            for (let i = 0; i < count; i++) {
-                const size = Math.random() * 5 + 2;
-                const x = Math.random() * canvasWidth;
-                const y = Math.random() * canvasHeight;
-                const speedX = Math.random() * 2 - 1;
-                const speedY = Math.random() * 3 + 1;
-                particlesArray.push(new Particle(x, y, size, speedX, speedY, color));
+        const hearts = [];
+        for (let i = 0; i < 50; i++) {
+            hearts.push(new Heart(Math.random() * heartCanvas.width, Math.random() * heartCanvas.height, 20, 1 + Math.random()));
+        }
+
+        function animateHearts() {
+            heartCtx.clearRect(0, 0, heartCanvas.width, heartCanvas.height);
+            hearts.forEach((heart) => {
+                heart.update();
+                heart.draw();
+            });
+            requestAnimationFrame(animateHearts);
+        }
+
+        animateHearts();
+
+        // Quiz logic
+        const quizQuestions = [
+            { question: "What’s my favorite color?", options: ["Red", "Blue", "Pink"], correct: 2 },
+            { question: "Where did we first meet?", options: ["School", "Park", "Mall"], correct: 0 },
+            { question: "What’s your favorite food?", options: ["Pizza", "Burger", "Pasta"], correct: 0 }
+        ];
+        let currentQuestion = 0;
+
+        function startQuiz() {
+            document.querySelector(".center-container").style.display = "none";
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentQuestion < quizQuestions.length) {
+                const container = document.getElementById("quiz-container");
+                const question = quizQuestions[currentQuestion];
+                container.innerHTML = `
+                    <div class="quiz-question active">
+                        <h2>${question.question}</h2>
+                        ${question.options.map((opt, index) => `<button onclick="checkAnswer(${index})">${opt}</button>`).join("")}
+                    </div>
+                `;
+            } else {
+                document.getElementById("quiz-container").style.display = "none";
+                document.querySelector(".final-reveal").style.display = "block";
             }
         }
 
-        function animateParticles(ctx, particlesArray, canvasWidth, canvasHeight) {
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            particlesArray.forEach((particle) => {
-                particle.update(canvasWidth, canvasHeight);
-                particle.draw(ctx);
-            });
-            requestAnimationFrame(() => animateParticles(ctx, particlesArray, canvasWidth, canvasHeight));
+        function checkAnswer(selected) {
+            if (selected === quizQuestions[currentQuestion].correct) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                alert("Try again!");
+            }
         }
 
-        // Initialize petals and hearts
-        initParticles(petals, 100, "rgba(255, 255, 0, 0.8)", petalCanvas.width, petalCanvas.height);
-        initParticles(hearts, 50, "rgba(255, 0, 0, 0.8)", heartCanvas.width, heartCanvas.height);
+        function showFinalPage() {
+            document.querySelector(".final-reveal").style.display = "none";
+            document.querySelector(".final-page").style.display = "block";
+        }
 
-        // Animate petals and hearts
-        animateParticles(petalCtx, petals, petalCanvas.width, petalCanvas.height);
-        animateParticles(heartCtx, hearts, heartCanvas.width, heartCanvas.height);
-
-        // Event Handlers
         function exitWebsite() {
             alert("Goodbye!");
             window.close();
         }
-
-        function continueWebsite() {
-            document.querySelector(".button-container").classList.add("hidden");
-            document.getElementById("new-page").classList.remove("hidden");
-        }
     </script>
 </body>
 </html>
+
