@@ -153,9 +153,9 @@
 
         // Quiz logic
         const quizQuestions = [
-            { question: "What’s my favorite color?", options: ["Red", "Blue", "Pink"], correct: 2 },
-            { question: "Where did we first meet?", options: ["School", "Park", "Mall"], correct: 0 },
-            { question: "What’s your favorite food?", options: ["Pizza", "Burger", "Pasta"], correct: 0 }
+            { question: "What’s my favorite color?", options: ["Red", "Blue", "Pink"], correct: 2, image: "https://example.com/favorite-color.jpg" },
+            { question: "Where did we first meet?", options: ["School", "Park", "Mall"], correct: 0, image: "https://example.com/favorite-color.jpg" },
+            { question: "What’s your favorite food?", options: ["Pizza", "Burger", "Pasta"], correct: 0, image: "https://example.com/favorite-color.jpg" }
         ];
         let currentQuestion = 0;
 
@@ -170,6 +170,7 @@
                 const question = quizQuestions[currentQuestion];
                 container.innerHTML = `
                     <div class="quiz-question active">
+                        <img src="${question.image}" alt="Question Image">
                         <h2>${question.question}</h2>
                         ${question.options.map((opt, index) => `<button onclick="checkAnswer(${index})">${opt}</button>`).join("")}
                     </div>
