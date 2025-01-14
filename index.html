@@ -59,11 +59,13 @@
     </style>
 </head>
 <body>
+    <audio id="background-music" src="https://d500.d2mefast.net/tb/f/6e/apocalypse_cigarettes_after_sex_mp3_46544.mp3?play" autoplay loop></audio>
     <canvas id="falling-hearts"></canvas>
     <div class="center-container">
         <h1>To the Love of My Life, Kabelo L.M. Choshane</h1>
         <button class="exit-btn" onclick="exitWebsite()">Exit</button>
         <button class="continue-btn" onclick="startQuiz()">Continue</button>
+        <button class="continue-btn" onclick="playMusicAndContinue()">Continue</button>
     </div>
 
     <div id="quiz-container">
@@ -81,9 +83,9 @@
 
     <div class="final-page" style="display:none; text-align: center;">
         <h1>You Said Yes!</h1>
-        <img src="her-picture.jpg" alt="Her Picture" style="border-radius: 50%; max-width: 200px;">
+        <img src="https://lh3.googleusercontent.com/pw/AP1GczN8z1QdTduDBqaYnf-QfY1WgCzipuUyDBWg8X52M6iHpvmtsev2LgZbZB-bM-zy9QBVMyv5mnAV4WSpQaPCqBu2THtBm2n5sE6hT4CusAxEOHnYhKfliqcOYo5r94bm7T2nb3MfW-X1ey70ibP2p1jK=w713-h951-s-no-gm?authuser=0" alt="Her Picture" style="border-radius: 50%; max-width: 200px;">
         <p>Here’s a meme for you:</p>
-        <img src="meme.gif" alt="Meme" style="max-width: 300px;">
+        <img src="https://gifsec.com/wp-content/uploads/2022/09/yes-gif-12.gif" alt="Meme" style="max-width: 300px;">
     </div>
 
     <script>
@@ -91,6 +93,7 @@
         const heartCtx = heartCanvas.getContext("2d");
         heartCanvas.width = window.innerWidth;
         heartCanvas.height = window.innerHeight;
+        const music = document.getElementById("background-music");
 
         // Draw hearts
         class Heart {
@@ -180,6 +183,12 @@
         function exitWebsite() {
             alert("Goodbye!");
             window.close();
+        }
+
+        function playMusicAndContinue() {
+            music.play();
+            document.querySelector(".button-container").classList.add("hidden");
+            document.getElementById("new-page").classList.remove("hidden");
         }
     </script>
 </body>
